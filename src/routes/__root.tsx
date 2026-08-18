@@ -15,8 +15,18 @@ export const Route = createRootRoute({
       },
       { name: 'color-scheme', content: 'dark' },
       { name: 'theme-color', content: '#08090a' },
+      { name: 'referrer', content: 'strict-origin-when-cross-origin' },
+      { property: 'og:title', content: 'Numen — coming soon' },
+      {
+        property: 'og:description',
+        content:
+          'Numen is a local-first personal AI presence for your home. Join the waitlist.',
+      },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:url', content: 'https://numen.site' },
     ],
     links: [
+      { rel: 'canonical', href: 'https://numen.site' },
       { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'apple-touch-icon', href: '/favicon.svg' },
