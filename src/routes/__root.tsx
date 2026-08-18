@@ -27,9 +27,9 @@ export const Route = createRootRoute({
     ],
     links: [
       { rel: 'canonical', href: 'https://numen.site' },
-      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'apple-touch-icon', href: '/favicon.svg' },
+      { rel: 'icon', type: 'image/svg+xml', href: '/Comming-soon-website/favicon.svg' },
+      { rel: 'icon', type: 'image/x-icon', href: '/Comming-soon-website/favicon.ico' },
+      { rel: 'apple-touch-icon', href: '/Comming-soon-website/favicon.svg' },
     ],
   }),
   shellComponent: RootDocument,
