@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { getWaitlistCount, submitWaitlistEmail } from '@/lib/supabase'
 
 function encode(data: Record<string, string>) {
   return Object.entries(data)
@@ -19,10 +20,9 @@ export function WaitlistForm() {
 
   useEffect(() => {
     let cancelled = false
-    fetch('/api/waitlist')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!cancelled && data && typeof data.count === 'number') setCount(data.count)
+    getWaitlistCount()
+      .then((c) => {
+        if (!cancelled && typeof c === 'number') setCount(c)
       })
       .catch(() => {})
     return () => {
@@ -37,8 +37,7 @@ export function WaitlistForm() {
     setStatus('pending')
     setErrorMessage('')
 
-    // Best-effort mirror into Netlify Forms for dashboard visibility — the
-    // database call below is the source of truth for success/failure and the count.
+    // Best-effort mirror into Netlify Forms
     fetch('/__forms.html', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -46,18 +45,13 @@ export function WaitlistForm() {
     }).catch(() => {})
 
     try {
-      const res = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, website: honeypot }),
-      })
-      const data = await res.json().catch(() => null)
-      if (!res.ok) {
-        setErrorMessage(data?.error || 'Something went wrong. Please try again.')
+      const result = await submitWaitlistEmail(email)
+      if (!result.success) {
+        setErrorMessage(result.error || 'Something went wrong. Please try again.')
         setStatus('error')
         return
       }
-      if (typeof data?.count === 'number') setCount(data.count)
+      if (typeof result.count === 'number') setCount(result.count)
       setStatus('confirmed')
     } catch {
       setErrorMessage('Network error — check your connection and try again.')

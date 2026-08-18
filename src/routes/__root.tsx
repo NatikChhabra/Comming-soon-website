@@ -16,6 +16,11 @@ export const Route = createRootRoute({
       { name: 'color-scheme', content: 'dark' },
       { name: 'theme-color', content: '#08090a' },
     ],
+    links: [
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'apple-touch-icon', href: '/favicon.svg' },
+    ],
   }),
   shellComponent: RootDocument,
 })
