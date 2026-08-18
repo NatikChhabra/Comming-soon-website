@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build"
+    "build": "vite build && node -e \"import('fs').then(fs => fs.copyFileSync('dist/client/index.html', 'dist/client/404.html'))\""
   },
   "dependencies": {
     "@netlify/database": "^2.0.0",
