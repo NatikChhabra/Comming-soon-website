@@ -78,9 +78,41 @@ code, .mono {
   mix-blend-mode: overlay;
 }
 
+/* Hero entrance.
+   This used to be a Framer Motion `initial="hidden"` variant, which meant the
+   server rendered every hero element at opacity:0 and the page stayed visually
+   blank until ~206KB of JS finished hydrating. Doing it in CSS instead means the
+   first paint is already correct — the animation is decoration, not a gate. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.rise-1 { animation-delay: 0ms; }
+.rise-2 { animation-delay: 120ms; }
+.rise-3 { animation-delay: 300ms; }
+.rise-4 { animation-delay: 450ms; }
+.rise-5 { animation-delay: 600ms; }
+
 @media (prefers-reduced-motion: reduce) {
   .bg-glow-a,
   .bg-glow-b {
     animation: none;
+  }
+
+  .rise {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }

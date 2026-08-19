@@ -68,21 +68,39 @@ export async function submitWaitlistEmail(
 
   if (supabase) {
     try {
+      // Preferred path: a SECURITY DEFINER function, so the table needs no anon
+      // INSERT grant at all. See db/waitlist-policy.sql.
+      const { error: rpcError } = await supabase.rpc('join_waitlist', {
+        p_email: normalizedEmail,
+        p_referrer:
+          typeof document !== 'undefined' ? document.referrer || null : null,
+      })
+
+      if (!rpcError) {
+        const updatedCount = await getWaitlistCount()
+        return { success: true, count: updatedCount ?? undefined }
+      }
+
+      // Fall back to a direct insert while that function is not deployed yet.
       const { error } = await supabase
         .from('waitlist_signups')
         .insert([{ email: normalizedEmail }])
 
-      // Ignore duplicate key error (23505) as success
-      if (error && error.code !== '23505') {
-        console.error('Supabase error:', error)
-        return {
-          success: false,
-          error: error.message || 'Something went wrong. Please try again.',
-        }
+      // A duplicate (23505) means they are already on the list. That is success.
+      if (!error || error.code === '23505') {
+        const updatedCount = await getWaitlistCount()
+        return { success: true, count: updatedCount ?? undefined }
       }
 
-      const updatedCount = await getWaitlistCount()
-      return { success: true, count: updatedCount ?? undefined }
+      // Never show a visitor a raw Postgres error. Before this, a blocked insert
+      // put "new row violates row-level security policy for table
+      // waitlist_signups" on screen under the signup button.
+      console.error('Waitlist insert failed:', error)
+      return {
+        success: false,
+        error:
+          'Could not save your email. Try again, or write to natik.chhabra@numen.site.',
+      }
     } catch (err) {
       console.error('Waitlist submission failed:', err)
       return { success: false, error: 'Network error — check your connection.' }

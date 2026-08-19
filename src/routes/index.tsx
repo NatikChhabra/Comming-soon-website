@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
 import { SignalMark } from '@/components/SignalMark'
 import { StatusLine } from '@/components/StatusLine'
 import { WaitlistForm } from '@/components/WaitlistForm'
@@ -7,15 +6,6 @@ import { WaitlistForm } from '@/components/WaitlistForm'
 export const Route = createFileRoute('/')({
   component: Home,
 })
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 14 },
-  show: (delay = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1], delay },
-  }),
-}
 
 function Home() {
   return (
@@ -50,39 +40,29 @@ function Home() {
         </header>
 
         <main className="flex flex-1 flex-col items-center justify-center gap-10 py-10 text-center">
-          <motion.div
-            initial="hidden"
-            animate="show"
-            custom={0}
-            variants={fadeUp}
-            className="w-full"
-          >
+          <div className="rise rise-1 w-full">
             <SignalMark />
-          </motion.div>
+          </div>
 
-          <motion.div initial="hidden" animate="show" custom={0.3} variants={fadeUp}>
+          <div className="rise rise-2">
             <StatusLine />
-          </motion.div>
+          </div>
 
-          <motion.p
-            initial="hidden"
-            animate="show"
-            custom={0.45}
-            variants={fadeUp}
-            className="max-w-xl text-balance text-[15px] leading-relaxed text-[var(--fg-60)] sm:text-[16px]"
-          >
+          {/* The line the whole campaign is built on. It was missing from the
+              page entirely, so traffic landed on a different sentence than the
+              one it clicked — and the document had no h1 at all. */}
+          <h1 className="rise rise-3 max-w-2xl text-balance text-[28px] font-medium leading-[1.15] tracking-[-0.02em] text-[var(--fg-100)] sm:text-[40px]">
+            Everything in your house is talking to someone else.{' '}
+            <span className="text-[var(--accent)]">Numen doesn't.</span>
+          </h1>
+
+          <p className="rise rise-3 max-w-xl text-balance text-[15px] leading-relaxed text-[var(--fg-60)] sm:text-[16px]">
             A presence for your home, running entirely on hardware you own. It knows who is
             asking, which device they're asking from, and what that device is allowed to do —
             before it ever acts. No cloud round-trip decides what happens in your own house.
-          </motion.p>
+          </p>
 
-          <motion.dl
-            initial="hidden"
-            animate="show"
-            custom={0.55}
-            variants={fadeUp}
-            className="grid w-full max-w-2xl grid-cols-1 divide-y divide-[var(--hair)] border-y border-[var(--hair)] sm:grid-cols-3 sm:divide-x sm:divide-y-0"
-          >
+          <dl className="rise rise-4 grid w-full max-w-2xl grid-cols-1 divide-y divide-[var(--hair)] border-y border-[var(--hair)] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             {[
               {
                 term: 'Local',
@@ -104,20 +84,14 @@ function Home() {
                 <dd className="text-[13px] leading-snug text-[var(--fg-38)]">{item.detail}</dd>
               </div>
             ))}
-          </motion.dl>
+          </dl>
 
-          <motion.div
-            initial="hidden"
-            animate="show"
-            custom={0.7}
-            variants={fadeUp}
-            className="flex w-full flex-col items-center gap-4"
-          >
+          <div className="rise rise-5 flex w-full flex-col items-center gap-4">
             <WaitlistForm />
             <p className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--fg-38)]">
               No spam. One email, when it's ready.
             </p>
-          </motion.div>
+          </div>
         </main>
 
         <footer className="mono flex flex-col items-center gap-2 py-8 text-[10px] uppercase tracking-[0.2em] text-[var(--fg-38)] sm:flex-row sm:justify-between">

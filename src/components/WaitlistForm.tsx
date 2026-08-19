@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react'
 import { getWaitlistCount, submitWaitlistEmail } from '@/lib/supabase'
 
-function encode(data: Record<string, string>) {
-  return Object.entries(data)
-    .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
-    .join('&')
-}
-
 type Status = 'idle' | 'pending' | 'confirmed' | 'error'
+
+// A visible "0 already waiting" is worse than no counter — it is proof against
+// you. Show the number only once it argues in your favour.
+const COUNT_VISIBLE_FROM = 25
 
 const countFormatter = new Intl.NumberFormat('en-US')
 
@@ -37,12 +35,10 @@ export function WaitlistForm() {
     setStatus('pending')
     setErrorMessage('')
 
-    // Best-effort mirror into Netlify Forms
-    fetch('/__forms.html', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: encode({ 'form-name': 'waitlist', email, 'bot-field': '' }),
-    }).catch(() => {})
+    // The Netlify Forms mirror that used to run here was dead code: the site is
+    // served by GitHub Pages, where POSTing to /__forms.html just hits a static
+    // file and captures nothing, and the .catch() hid that. Supabase is the only
+    // capture path. Restore the mirror only if the host actually moves to Netlify.
 
     try {
       const result = await submitWaitlistEmail(email)
@@ -66,7 +62,7 @@ export function WaitlistForm() {
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
           REQUEST RECEIVED — you&rsquo;re on the list.
         </div>
-        {count !== null && (
+        {count !== null && count >= COUNT_VISIBLE_FROM && (
           <p className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--fg-38)]">
             {countFormatter.format(count)} people now waiting
           </p>
@@ -120,7 +116,8 @@ export function WaitlistForm() {
         {status === 'error' ? (
           <span className="text-[var(--fg-100)]">{errorMessage}</span>
         ) : (
-          count !== null && (
+          count !== null &&
+          count >= COUNT_VISIBLE_FROM && (
             <span className="text-[var(--fg-38)]">
               {countFormatter.format(count)} already waiting
             </span>
